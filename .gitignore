@@ -1,0 +1,17 @@
+ft_traceroute
+objs/
+
+# Compilation artifacts
+*.o
+*.a
+*.so
+*.dSYM/
+
+# Tooling caches
+.cache/
+compile_commands.json
+
+# OS/editor files
+.DS_Store
+*.swp
+*.swo
