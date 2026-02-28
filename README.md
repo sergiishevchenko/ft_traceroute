@@ -23,7 +23,7 @@ the network path to a host using UDP probes and ICMP replies.
   - `*` for timeout
   - annotations like `!N`, `!H`, `!P`, `!F`, `!S`, `!X`, `!<code>`
 
-## Assignment status (42 subject)
+## 42 Project Completion Status
 
 ### Mandatory part
 
