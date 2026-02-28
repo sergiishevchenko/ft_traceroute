@@ -23,6 +23,52 @@ the network path to a host using UDP probes and ICMP replies.
   - `*` for timeout
   - annotations like `!N`, `!H`, `!P`, `!F`, `!S`, `!X`, `!<code>`
 
+## Assignment status (42 subject)
+
+### Mandatory part
+
+- ✓ Executable name: `ft_traceroute`
+- ✓ Makefile targets: `all`, `clean`, `fclean`, `re`
+- ✓ `--help` option
+- ✓ Target as IPv4/hostname (`getaddrinfo`, IPv4 mode)
+- ✓ UDP probes with increasing TTL
+- ✓ ICMP receive path with timeout handling (`select` + `recvfrom`)
+- ✓ Per-hop, per-probe RTT display with traceroute-like formatting
+- ✓ Graceful error handling (invalid args, resolve/socket/send failures)
+- ✓ Forbidden functions not used (`fcntl`, `poll`, `ppoll`)
+
+### Bonus part
+
+- ✓ Reverse DNS display of hops (`getnameinfo`)
+- ✓ `-n` (numeric output only, no reverse DNS)
+- ✓ `-f first_ttl`
+- ✓ `-m max_ttl`
+- ✓ `-q nqueries`
+- ✓ `-p port`
+
+### Requirement matrix
+
+| Requirement | Status | Main implementation |
+|---|---|---|
+| Executable name `ft_traceroute` | ✅ | `Makefile` |
+| Make targets `all/clean/fclean/re` | ✅ | `Makefile` |
+| `--help` option | ✅ | `srcs/args.c` |
+| Hostname/IPv4 target argument | ✅ | `srcs/args.c`, `srcs/resolve.c` |
+| IPv4 resolution with `getaddrinfo` | ✅ | `srcs/resolve.c` |
+| UDP probes with increasing TTL | ✅ | `srcs/send.c`, `srcs/socket.c`, `srcs/main.c` |
+| ICMP reply parsing and probe matching | ✅ | `srcs/recv.c` |
+| RTT measurement and display | ✅ | `srcs/time.c`, `srcs/display.c` |
+| Traceroute-like hop output (`*`, annotations) | ✅ | `srcs/display.c` |
+| Graceful error handling | ✅ | `srcs/utils.c`, `srcs/args.c`, `srcs/resolve.c` |
+| Bonus: reverse DNS (`getnameinfo`) | ✅ | `srcs/display.c` |
+| Bonus flags `-n/-f/-m/-q/-p` | ✅ | `srcs/args.c` |
+| Forbidden `fcntl/poll/ppoll` not used | ✅ | whole project |
+
+### Validation notes
+
+- ✓ Final comparison against system `traceroute` on Linux VM
+- ✓ Valgrind run on Linux VM
+
 ## Requirements
 
 - C compiler (`gcc`)
