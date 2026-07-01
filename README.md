@@ -82,16 +82,23 @@ sudo ./ft_traceroute -p 40000 example.com
 
 ## How it works (brief)
 
-1. Resolve target hostname to IPv4 address.
-2. Create:
-   - UDP send socket
-   - ICMP raw receive socket
-3. For each TTL from `first_ttl` to `max_ttl`:
-   - set `IP_TTL` on the UDP socket
-   - send `nqueries` probes to incremented destination ports
-   - wait for ICMP replies using `select()` with timeout
-   - match replies to probes via embedded UDP destination port
-4. Print hop results and stop when destination is reached.
+1. Parse CLI options and verify root privileges (`getuid`).
+2. Resolve the target hostname or IPv4 address with `getaddrinfo` (`AF_INET`).
+3. Open two sockets:
+   - UDP socket for sending probes
+   - raw ICMP socket for receiving replies
+4. For each TTL from `first_ttl` to `max_ttl`:
+   - set `IP_TTL` on the UDP socket with `setsockopt`
+   - send `nqueries` UDP probes (32-byte payload, 60-byte total packet size)
+   - use destination ports `base_port + seq` so each probe can be identified
+   - wait for replies with `select()` and read them via `recvfrom()`
+   - parse ICMP errors (`Time Exceeded` for intermediate hops, `Port Unreachable` at destination)
+   - match replies to probes using the embedded UDP destination port
+   - compute RTT from `gettimeofday()` timestamps and print the hop line
+5. Stop when the destination replies with `ICMP Port Unreachable`, or when `max_ttl` is reached.
+6. Close sockets and exit.
+
+Timeouts are shown as `*`. Intermediate routers may be displayed with reverse DNS (`getnameinfo`) unless `-n` is used.
 
 ## Current scope / limitations
 
