@@ -1,86 +1,31 @@
 # ft_traceroute
 
-A small `traceroute` implementation in C (42 school project style) that traces
-the network path to a host using UDP probes and ICMP replies.
+A reimplementation of the UNIX `traceroute` utility in C. Traces the network
+path to a remote host using UDP probes and ICMP replies.
 
-## What it does
+## Project structure
 
-- Sends UDP probes with increasing TTL values.
-- Receives ICMP responses (`Time Exceeded` / `Destination Unreachable`).
-- Prints hop-by-hop route with per-probe RTT in milliseconds.
-- Supports reverse DNS lookup (or numeric-only mode with `-n`).
-- Stops when the destination is reached (`ICMP port unreachable`).
-
-## Features
-
-- IPv4 target resolution via `getaddrinfo`.
-- Configurable:
-  - start TTL (`-f`)
-  - max hops (`-m`)
-  - probes per hop (`-q`)
-  - base destination port (`-p`)
-- Classic traceroute-style output:
-  - `*` for timeout
-  - annotations like `!N`, `!H`, `!P`, `!F`, `!S`, `!X`, `!<code>`
-
-## Requirements
-
-- C compiler (`gcc`)
-- `make`
-- Unix-like system with raw socket support
-- Root privileges (required to open ICMP raw socket)
-
-## Build
-
-```bash
-make
+```
+ft_traceroute/
+├── Makefile
+├── includes/
+│   └── ft_traceroute.h      structs, constants, function prototypes
+├── srcs/
+│   ├── main.c               entry point, TTL loop, stop condition
+│   ├── args.c               CLI parsing, validation, --help
+│   ├── resolve.c            hostname/IPv4 resolution (getaddrinfo)
+│   ├── socket.c             UDP + raw ICMP sockets, TTL setup
+│   ├── send.c               UDP probe transmission
+│   ├── recv.c               ICMP receive, parsing, probe matching
+│   ├── time.c               RTT calculation
+│   ├── display.c            header, hop output, DNS, annotations
+│   └── utils.c              fatal error helper
+└── docs/
+    ├── en.subject.pdf       project subject
+    └── DOCUMENTATION.md     technical documentation
 ```
 
-This produces the executable:
-
-```bash
-./ft_traceroute
-```
-
-Useful Make targets:
-
-- `make` - build
-- `make clean` - remove object files
-- `make fclean` - remove object files and binary
-- `make re` - full rebuild
-
-## Usage
-
-```bash
-sudo ./ft_traceroute [options] host
-```
-
-### Options
-
-- `--help` - show help and exit
-- `-n` - do not resolve IP addresses to hostnames
-- `-f first_ttl` - start from hop `first_ttl` (range: `1-255`, default: `1`)
-- `-m max_ttl` - maximum hops (range: `1-255`, default: `30`)
-- `-q nqueries` - probes per hop (range: `1-10`, default: `3`)
-- `-p port` - base destination UDP port (range: `1-65535`, default: `33434`)
-
-## Examples
-
-```bash
-# Basic trace
-sudo ./ft_traceroute google.com
-
-# Numeric output only (no reverse DNS)
-sudo ./ft_traceroute -n 1.1.1.1
-
-# Start at hop 5, max 20 hops, 5 probes per hop
-sudo ./ft_traceroute -f 5 -m 20 -q 5 example.com
-
-# Use custom base port
-sudo ./ft_traceroute -p 40000 example.com
-```
-
-## How it works (brief)
+## How it works
 
 1. Parse CLI options and verify root privileges (`getuid`).
 2. Resolve the target hostname or IPv4 address with `getaddrinfo` (`AF_INET`).
@@ -100,15 +45,56 @@ sudo ./ft_traceroute -p 40000 example.com
 
 Timeouts are shown as `*`. Intermediate routers may be displayed with reverse DNS (`getnameinfo`) unless `-n` is used.
 
-## Current scope / limitations
+## Features
 
-- IPv4 only.
-- UDP-based traceroute only (no ICMP/UDP mode switch).
-- No advanced traceroute flags beyond the options listed above.
-- Requires elevated privileges.
+- IPv4 target resolution via `getaddrinfo`
+- Reverse DNS for hop addresses (`getnameinfo`)
+- Classic traceroute-style output with annotations (`!N`, `!H`, `!P`, `!F`, `!S`, `!X`)
+- Configurable start TTL, max hops, probes per hop, base destination port
 
-## Project layout
+## Requirements
 
-- `includes/` - headers
-- `srcs/` - source files
-- `Makefile` - build rules
+- C compiler (`gcc`)
+- `make`
+- Linux with raw socket support
+- Root privileges (required to open ICMP raw socket)
+
+## Build
+
+```bash
+make
+```
+
+Other targets: `make clean`, `make fclean`, `make re`.
+
+## Usage
+
+```bash
+sudo ./ft_traceroute [options] host
+```
+
+### Options
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `--help` | Show help and exit | |
+| `-n` | Do not resolve IPs to hostnames | off |
+| `-f first_ttl` | Start from this hop (1-255) | 1 |
+| `-m max_ttl` | Maximum number of hops (1-255) | 30 |
+| `-q nqueries` | Probes per hop (1-10) | 3 |
+| `-p port` | Base destination UDP port (1-65535) | 33434 |
+
+## Examples
+
+```bash
+sudo ./ft_traceroute google.com
+sudo ./ft_traceroute -n 1.1.1.1
+sudo ./ft_traceroute -f 5 -m 20 -q 5 example.com
+sudo ./ft_traceroute -p 40000 example.com
+```
+
+## Limitations
+
+- IPv4 only
+- UDP-based probes only (no ICMP mode)
+- Requires root privileges
