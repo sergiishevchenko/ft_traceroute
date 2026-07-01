@@ -60,7 +60,7 @@ void	print_hop(t_traceroute *tr, t_probe *probes)
 	{
 		if (!probes[i].received)
 		{
-			printf(" *");
+			printf("  *");
 			i++;
 			continue ;
 		}
