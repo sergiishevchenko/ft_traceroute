@@ -47,21 +47,21 @@ Timeouts are shown as `*`.
 
 ## Mandatory vs bonus
 
-| Feature | Part |
-|---------|------|
-| `ft_traceroute` binary, C, Makefile | mandatory |
-| `--help` | mandatory |
-| IPv4 host argument | mandatory |
-| UDP traceroute (TTL, ICMP replies) | mandatory |
-| Hop output without reverse DNS | mandatory |
-| Output like real `traceroute` | mandatory |
-| `-n` | bonus |
-| `-f first_ttl` | bonus |
-| `-m max_ttl` | bonus |
-| `-q nqueries` | bonus |
-| `-p port` | bonus |
-| Reverse DNS on hops | bonus |
-| ICMP annotations (`!N`, `!H`, …) | bonus |
+| Feature | Part | Description |
+|---------|------|-------------|
+| `ft_traceroute` binary, C, Makefile | mandatory | Compiled program with standard build targets (`all`, `clean`, `fclean`, `re`) |
+| `--help` | mandatory | Only allowed option in mandatory part; prints usage and exits |
+| IPv4 host argument | mandatory | Single target: IPv4 address or hostname, resolved via `getaddrinfo` |
+| UDP traceroute (TTL, ICMP replies) | mandatory | Send UDP probes with increasing TTL; handle `Time Exceeded` and `Port Unreachable` |
+| Hop output without reverse DNS | mandatory | Each hop line shows router IP only, no `getnameinfo` lookup |
+| Output like real `traceroute` | mandatory | Header, hop layout, `*` on timeout; ±30 ms RTT difference tolerated |
+| `-n` | bonus | Disable reverse DNS; print IP addresses only on hop lines |
+| `-f first_ttl` | bonus | Set starting TTL/hop number (1–255, default 1) |
+| `-m max_ttl` | bonus | Set maximum number of hops (1–255, default 30) |
+| `-q nqueries` | bonus | Set number of probes sent per hop (1–10, default 3) |
+| `-p port` | bonus | Set base destination UDP port; each probe uses `port + seq` (default 33434) |
+| Reverse DNS on hops | bonus | Resolve each hop IP to hostname via `getnameinfo`, shown as `host (ip)` |
+| ICMP annotations (`!N`, `!H`, …) | bonus | Append codes on ICMP unreachable replies (`!N` network, `!H` host, etc.) |
 
 ## Requirements
 
