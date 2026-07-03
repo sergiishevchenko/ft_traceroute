@@ -43,14 +43,25 @@ ft_traceroute/
 5. Stop when the destination replies with `ICMP Port Unreachable`, or when `max_ttl` is reached.
 6. Close sockets and exit.
 
-Timeouts are shown as `*`. Intermediate routers may be displayed with reverse DNS (`getnameinfo`) unless `-n` is used.
+Timeouts are shown as `*`.
 
-## Features
+## Mandatory vs bonus
 
-- IPv4 target resolution via `getaddrinfo`
-- Reverse DNS for hop addresses (`getnameinfo`)
-- Classic traceroute-style output with annotations (`!N`, `!H`, `!P`, `!F`, `!S`, `!X`)
-- Configurable start TTL, max hops, probes per hop, base destination port
+| Feature | Part |
+|---------|------|
+| `ft_traceroute` binary, C, Makefile | mandatory |
+| `--help` | mandatory |
+| IPv4 host argument | mandatory |
+| UDP traceroute (TTL, ICMP replies) | mandatory |
+| Hop output without reverse DNS | mandatory |
+| Output like real `traceroute` | mandatory |
+| `-n` | bonus |
+| `-f first_ttl` | bonus |
+| `-m max_ttl` | bonus |
+| `-q nqueries` | bonus |
+| `-p port` | bonus |
+| Reverse DNS on hops | bonus |
+| ICMP annotations (`!N`, `!H`, …) | bonus |
 
 ## Requirements
 
