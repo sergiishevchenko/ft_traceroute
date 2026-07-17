@@ -32,66 +32,56 @@ which traceroute
 
 These tests validate argument parsing and error handling before socket creation.
 
+In CLI error tests below, `example.com` is only a dummy destination. The program exits on option validation before DNS/network, so any string works as the last argument.
+
 ### 3.1 Help and basic usage
 
 | # | Command | Expected stdout | Expected stderr | Exit code |
 |---|---------|-----------------|-----------------|-----------|
 | C1 | `./ft_traceroute --help` | Usage block with `--help`, `-n`, `-f`, `-m`, `-q`, `-p` | empty | `0` |
 | C2 | `./ft_traceroute` | empty | `missing host operand` | `1` |
-| C3 | `./ft_traceroute host1 host2` | empty | `too many arguments` | `1` |
-| C4 | `./ft_traceroute -z host` | empty | `bad option` | `1` |
-| C5 | `./ft_traceroute --unknown host` | empty | `bad option` | `1` |
+| C3 | `./ft_traceroute example.com google.com` | empty | `too many arguments` | `1` |
+| C4 | `./ft_traceroute -z example.com` | empty | `bad option` | `1` |
+| C5 | `./ft_traceroute --unknown example.com` | empty | `bad option` | `1` |
 
 ### 3.2 Option validation
 
 | # | Command | Expected result |
 |---|---------|-----------------|
-| C6 | `./ft_traceroute -f host` | `option requires an argument -- 'first_ttl'` |
-| C7 | `./ft_traceroute -m host` | `option requires an argument -- 'max_ttl'` |
-| C8 | `./ft_traceroute -q host` | `option requires an argument -- 'nqueries'` |
-| C9 | `./ft_traceroute -p host` | `option requires an argument -- 'port'` |
-| C10 | `./ft_traceroute -f 0 host` | `invalid value for 'first_ttl' (must be 1-255)` |
-| C11 | `./ft_traceroute -f 256 host` | `invalid value for 'first_ttl' (must be 1-255)` |
-| C12 | `./ft_traceroute -m 0 host` | `invalid value for 'max_ttl' (must be 1-255)` |
-| C13 | `./ft_traceroute -q 0 host` | `invalid value for 'nqueries' (must be 1-10)` |
-| C14 | `./ft_traceroute -q 11 host` | `invalid value for 'nqueries' (must be 1-10)` |
-| C15 | `./ft_traceroute -p 0 host` | `invalid value for 'port' (must be 1-65535)` |
-| C16 | `./ft_traceroute -f abc host` | `invalid value for 'first_ttl'` |
-| C17 | `./ft_traceroute host` (without sudo) | `root privileges required` |
+| C6 | `./ft_traceroute -f` | `option requires an argument -- 'first_ttl'` |
+| C7 | `./ft_traceroute -m` | `option requires an argument -- 'max_ttl'` |
+| C8 | `./ft_traceroute -q` | `option requires an argument -- 'nqueries'` |
+| C9 | `./ft_traceroute -p` | `option requires an argument -- 'port'` |
+| C10 | `./ft_traceroute -f 0 example.com` | `invalid value for 'first_ttl' (must be 1-255)` |
+| C11 | `./ft_traceroute -f 256 example.com` | `invalid value for 'first_ttl' (must be 1-255)` |
+| C12 | `./ft_traceroute -m 0 example.com` | `invalid value for 'max_ttl' (must be 1-255)` |
+| C13 | `./ft_traceroute -q 0 example.com` | `invalid value for 'nqueries' (must be 1-10)` |
+| C14 | `./ft_traceroute -q 11 example.com` | `invalid value for 'nqueries' (must be 1-10)` |
+| C15 | `./ft_traceroute -p 0 example.com` | `invalid value for 'port' (must be 1-65535)` |
+| C16 | `./ft_traceroute -f abc example.com` | `invalid value for 'first_ttl'` |
+| C17 | `./ft_traceroute example.com` (without sudo) | `root privileges required` |
 
 ## 4. Network tests (root required)
 
-Run all commands below with `sudo`.
+Run all commands below with `sudo`. Results depend on your network path, firewall, and DNS.
 
-### 4.1 Basic traceroute
-
-| # | Command | What to check |
-|---|---------|---------------|
-| N1 | `sudo ./ft_traceroute 1.1.1.1` | Header printed, hop lines shown, program exits normally |
-| N2 | `sudo ./ft_traceroute google.com` | Hostname resolved, header shows `host (ip)` |
-| N3 | `sudo ./ft_traceroute -n 8.8.8.8` | Hop lines show IP only, no hostname lookup |
-| N4 | `sudo ./ft_traceroute -m 5 1.1.1.1` | Stops after 5 hops if destination not reached |
-| N5 | `sudo ./ft_traceroute -f 3 -m 8 1.1.1.1` | First printed hop number is `3` |
-| N6 | `sudo ./ft_traceroute -q 1 1.1.1.1` | One probe per hop line |
-| N7 | `sudo ./ft_traceroute -p 40000 1.1.1.1` | Traceroute still works with custom base port |
-
-### 4.2 Invalid host
-
-| # | Command | Expected result |
-|---|---------|-----------------|
-| N8 | `sudo ./ft_traceroute invalid.host.42test` | DNS resolution error on stderr, exit `1` |
-| N9 | `sudo ./ft_traceroute 999.999.999.999` | Resolution error, no segfault |
-
-### 4.3 Stop condition
-
-| # | Scenario | Expected result |
-|---|----------|-----------------|
-| N10 | Reachable public host | Program stops when destination replies with ICMP Port Unreachable |
-| N11 | Unreachable / filtered host | Timeouts shown as `*`, program stops at `max_ttl` |
+| # | Command | Real? | What to check |
+|---|---------|-------|---------------|
+| N1 | `sudo ./ft_traceroute 1.1.1.1` | yes (needs net) | Header + hop lines, exit `0` |
+| N2 | `sudo ./ft_traceroute google.com` | yes (needs net/DNS) | Header: `google.com (<resolved_ip>)` |
+| N3 | `sudo ./ft_traceroute -n 8.8.8.8` | yes (needs net) | Hop lines show IPs only |
+| N4 | `sudo ./ft_traceroute -m 5 1.1.1.1` | yes (needs net) | At most 5 hop lines; may stop earlier if destination is reached |
+| N5 | `sudo ./ft_traceroute -f 3 -m 8 1.1.1.1` | yes (needs net) | First hop number is `3` |
+| N6 | `sudo ./ft_traceroute -q 1 1.1.1.1` | yes (needs net) | One probe result per hop line |
+| N7 | `sudo ./ft_traceroute -p 40000 1.1.1.1` | yes (needs net) | Runs normally with custom base port |
+| N8 | `sudo ./ft_traceroute invalid.host.42test` | yes | DNS error on stderr, exit `1` (must use sudo — root is checked before resolve) |
+| N9 | `sudo ./ft_traceroute 999.999.999.999` | yes | Resolution error, exit `1`, no segfault |
+| N10 | `sudo ./ft_traceroute -n 1.1.1.1` | yes (needs net) | Stops after destination replies (Port Unreachable), usually before hop 30 |
+| N11 | `sudo ./ft_traceroute -n -m 5 10.255.255.1` | depends | Often mostly `*`, then stops at max TTL; exact hops depend on your LAN |
 
 ## 5. Output format tests
 
-Compare output with the system `traceroute` on Linux.
+Compare output with the system `traceroute` on **Linux** (evaluation VM). On macOS the system binary differs.
 
 ### 5.1 Header
 
@@ -175,69 +165,20 @@ Unacceptable differences:
 
 | # | Test | Expected result |
 |---|------|-----------------|
-| S1 | Run 10 times on same host | No segfault, no unexpected exit |
-| S2 | Interrupt with `Ctrl+C` during trace | Process terminates (OS handles signal) |
-| S3 | `./ft_traceroute -f 1 -m 1 -q 10 1.1.1.1` | Handles max probes without crash |
-| S4 | `./ft_traceroute -p 65500 -m 30 -q 10 1.1.1.1` | Port wrap-around does not crash |
-| S5 | Valgrind (optional) | `valgrind --leak-check=full sudo ./ft_traceroute -m 3 -n 127.0.0.1` — no leaks from project code |
+| S1 | `sudo ./ft_traceroute -n -m 5 1.1.1.1` (run 10 times) | No segfault, exit `0` each time |
+| S2 | Start a long trace, press `Ctrl+C` | Process terminates |
+| S3 | `sudo ./ft_traceroute -f 1 -m 1 -q 10 1.1.1.1` | Max probes handled, no crash |
+| S4 | `sudo ./ft_traceroute -p 65500 -m 5 -q 3 1.1.1.1` | Port wrap-around does not crash |
+| S5 | `sudo valgrind --leak-check=full ./ft_traceroute -m 3 -n 127.0.0.1` | No leaks from project code (optional) |
 
-## 8. Quick smoke test script
-
-Save as `test_smoke.sh` in the project root:
+## 8. Automated test script
 
 ```bash
-#!/bin/bash
-set -e
-
-BIN="./ft_traceroute"
-PASS=0
-FAIL=0
-
-check() {
-    local desc="$1"
-    local cmd="$2"
-    local expect="$3"
-    if eval "$cmd" > /tmp/ft_test_out 2> /tmp/ft_test_err; then
-        rc=0
-    else
-        rc=$?
-    fi
-    if eval "$expect"; then
-        echo "[PASS] $desc"
-        PASS=$((PASS + 1))
-    else
-        echo "[FAIL] $desc (exit=$rc)"
-        cat /tmp/ft_test_err
-        FAIL=$((FAIL + 1))
-    fi
-}
-
-make re > /dev/null
-
-check "help exits 0" "$BIN --help" "[[ \$rc -eq 0 ]]"
-check "missing host" "$BIN" "[[ \$rc -eq 1 ]] && grep -q 'missing host operand' /tmp/ft_test_err"
-check "bad option" "$BIN -z host" "[[ \$rc -eq 1 ]] && grep -q 'bad option' /tmp/ft_test_err"
-check "invalid first_ttl" "$BIN -f 0 host" "[[ \$rc -eq 1 ]] && grep -q 'invalid value' /tmp/ft_test_err"
-check "root required" "$BIN 1.1.1.1" "[[ \$rc -eq 1 ]] && grep -q 'root privileges required' /tmp/ft_test_err"
-
-if [[ $EUID -eq 0 ]]; then
-    check "basic trace" "$BIN -n -m 3 -q 1 1.1.1.1" "[[ \$rc -eq 0 ]] && grep -q 'traceroute to' /tmp/ft_test_out"
-else
-    echo "[SKIP] network tests (run as root to enable)"
-fi
-
-echo ""
-echo "Results: $PASS passed, $FAIL failed"
-[[ $FAIL -eq 0 ]]
+./test.sh              # build + CLI tests
+sudo ./test.sh --network   # also run network tests
 ```
 
-Run:
-
-```bash
-chmod +x test_smoke.sh
-./test_smoke.sh
-sudo ./test_smoke.sh
-```
+Exit code `0` if all executed tests pass.
 
 ## 9. Evaluation rehearsal
 
