@@ -65,6 +65,8 @@ int	recv_probe(t_traceroute *tr, t_probe *probe)
 		ret = select(tr->recv_sock + 1, &fds, NULL, NULL, &tv);
 		if (ret <= 0)
 			return (probe->received = 0);
+		if (!FD_ISSET(tr->recv_sock, &fds))
+			continue ;
 		from_len = sizeof(from);
 		bytes = recvfrom(tr->recv_sock, buf, sizeof(buf), 0,
 				(struct sockaddr *)&from, &from_len);

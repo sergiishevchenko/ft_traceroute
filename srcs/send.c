@@ -5,7 +5,7 @@ void	send_probe(t_traceroute *tr, t_probe *probe)
 	struct sockaddr_in	dest;
 	char				payload[PAYLOAD_SIZE];
 
-	probe->port = tr->port + tr->seq;
+	probe->port = ((tr->port + tr->seq - 1) % 65535) + 1;
 	memset(payload, 0, sizeof(payload));
 	memset(&dest, 0, sizeof(dest));
 	dest.sin_family = AF_INET;

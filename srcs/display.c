@@ -35,7 +35,7 @@ static void	print_addr(const char *ip_str, bool no_dns)
 
 	if (no_dns)
 	{
-		printf(" %s", ip_str);
+		printf("  %s", ip_str);
 		return ;
 	}
 	memset(&sa, 0, sizeof(sa));
@@ -43,9 +43,9 @@ static void	print_addr(const char *ip_str, bool no_dns)
 	inet_pton(AF_INET, ip_str, &sa.sin_addr);
 	if (getnameinfo((struct sockaddr *)&sa, sizeof(sa),
 			hostname, sizeof(hostname), NULL, 0, 0) == 0)
-		printf(" %s (%s)", hostname, ip_str);
+		printf("  %s (%s)", hostname, ip_str);
 	else
-		printf(" %s (%s)", ip_str, ip_str);
+		printf("  %s (%s)", ip_str, ip_str);
 }
 
 void	print_hop(t_traceroute *tr, t_probe *probes)
@@ -53,7 +53,7 @@ void	print_hop(t_traceroute *tr, t_probe *probes)
 	char	last_addr[INET_ADDRSTRLEN];
 	int		i;
 
-	printf("%2d ", tr->ttl);
+	printf("%2d", tr->ttl);
 	last_addr[0] = '\0';
 	i = 0;
 	while (i < tr->nprobes)
