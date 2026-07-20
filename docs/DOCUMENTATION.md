@@ -24,6 +24,8 @@ For deep dives into each concern, see:
 |----------|--------|
 | [cli.md](cli.md) | Argument parsing, validation, root check |
 | [networking.md](networking.md) | DNS resolution, sockets, TTL |
+| [udp.md](udp.md) | UDP deep dive: wire format, ports, matching, edge cases |
+| [hops.md](hops.md) | Hop discovery, TTL loop, bounds, stop rules |
 | [probing.md](probing.md) | Main loop, send/recv, RTT, stop condition |
 | [output.md](output.md) | Header, hop lines, reverse DNS, annotations |
 | [TESTING.md](TESTING.md) | Manual test plan |
