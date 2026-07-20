@@ -22,6 +22,7 @@ For deep dives into each concern, see:
 
 | Document | Topic |
 |----------|--------|
+| [structures.md](structures.md) | Constants, `t_probe` / `t_traceroute`, `timeval`, `sockaddr_in` |
 | [cli.md](cli.md) | Argument parsing, validation, root check |
 | [networking.md](networking.md) | DNS resolution, sockets, TTL |
 | [udp.md](udp.md) | UDP deep dive: wire format, ports, matching, edge cases |
@@ -121,6 +122,7 @@ ft_traceroute/
 ├── test.sh                  Helper test script
 └── docs/
     ├── DOCUMENTATION.md     This file
+    ├── structures.md        Constants, structs, timeval, sockaddr_in
     ├── cli.md
     ├── networking.md
     ├── probing.md
