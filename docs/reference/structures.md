@@ -1,7 +1,7 @@
 # Data Model — Constants, Structures, and System Types
 
 **Header:** `includes/ft_traceroute.h`  
-**Related:** [DOCUMENTATION.md](DOCUMENTATION.md), [cli.md](cli.md), [probing.md](probing.md)
+**Related:** [DOCUMENTATION.md](../DOCUMENTATION.md), [cli.md](../modules/cli.md), [probing.md](../modules/probing.md)
 
 This document explains every `#define` and every field of the project
 structures, plus the two standard libc types they embed:

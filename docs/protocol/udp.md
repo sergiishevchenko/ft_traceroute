@@ -2,7 +2,7 @@
 
 **Sources:** `srcs/socket.c`, `srcs/send.c`, `srcs/recv.c`, `srcs/resolve.c`  
 **Related header:** `includes/ft_traceroute.h` (`<netinet/udp.h>`, `DEFAULT_PORT`, `PAYLOAD_SIZE`)  
-**Related docs:** [networking.md](networking.md), [probing.md](probing.md), [hops.md](hops.md), [output.md](output.md)
+**Related docs:** [networking.md](../modules/networking.md), [probing.md](../modules/probing.md), [hops.md](hops.md), [output.md](../modules/output.md)
 
 ## Overview
 
@@ -27,7 +27,7 @@ builds and identifies probes, and the edge cases that produce `*`.
 
 Outbound traffic is always UDP. Inbound control traffic is always ICMP.
 Those two directions use two different sockets; see
-[networking.md](networking.md).
+[networking.md](../modules/networking.md).
 
 ---
 
@@ -94,7 +94,7 @@ When TTL is large enough for the UDP datagram to arrive at the target:
 4. That ICMP is sourced from the destination's own IP.
 
 Port Unreachable is therefore the **success** signal for UDP
-traceroute, not a tool failure. See [output.md](output.md) — code 3
+traceroute, not a tool failure. See [output.md](../modules/output.md) — code 3
 prints no `!` annotation; `check_reached()` in `main.c` stops the loop.
 
 ### Why not a well-known port?
@@ -581,7 +581,7 @@ timeout even though ICMP arrived.
 
 Different probes at the same TTL can take different paths and return
 different router IPs. Port uniqueness still matches each probe; display
-prints each new address (see [hops.md](hops.md) / [output.md](output.md)).
+prints each new address (see [hops.md](hops.md) / [output.md](../modules/output.md)).
 
 ### Late replies
 

@@ -21,8 +21,12 @@ ft_traceroute/
 │   ├── display.c            header, hop output, DNS, annotations
 │   └── utils.c              fatal error helper
 └── docs/
+    ├── DOCUMENTATION.md     technical documentation (hub)
     ├── en.subject.pdf       project subject
-    └── DOCUMENTATION.md     technical documentation
+    ├── reference/           constants & data structures
+    ├── modules/             CLI, networking, probing, output
+    ├── protocol/            UDP & hop behaviour deep dives
+    └── testing/             manual test plan
 ```
 
 ## How it works

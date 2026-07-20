@@ -20,17 +20,34 @@ constraints.
 
 For deep dives into each concern, see:
 
+#### Reference
+
 | Document | Topic |
 |----------|--------|
-| [structures.md](structures.md) | Constants, `t_probe` / `t_traceroute`, `timeval`, `sockaddr_in` |
-| [cli.md](cli.md) | Argument parsing, validation, root check |
-| [networking.md](networking.md) | DNS resolution, sockets, TTL |
-| [udp.md](udp.md) | UDP deep dive: wire format, ports, matching, edge cases |
-| [hops.md](hops.md) | Hop discovery, TTL loop, bounds, stop rules |
-| [probing.md](probing.md) | Main loop, send/recv, RTT, stop condition |
-| [output.md](output.md) | Header, hop lines, reverse DNS, annotations |
-| [TESTING.md](TESTING.md) | Manual test plan |
+| [structures.md](reference/structures.md) | Constants, `t_probe` / `t_traceroute`, `timeval`, `sockaddr_in` |
 | [en.subject.pdf](en.subject.pdf) | Official subject PDF |
+
+#### Modules (code layers)
+
+| Document | Topic |
+|----------|--------|
+| [cli.md](modules/cli.md) | Argument parsing, validation, root check |
+| [networking.md](modules/networking.md) | DNS resolution, sockets, TTL |
+| [probing.md](modules/probing.md) | Main loop, send/recv, RTT, stop condition |
+| [output.md](modules/output.md) | Header, hop lines, reverse DNS, annotations |
+
+#### Protocol / behaviour
+
+| Document | Topic |
+|----------|--------|
+| [udp.md](protocol/udp.md) | UDP deep dive: wire format, ports, matching, edge cases |
+| [hops.md](protocol/hops.md) | Hop discovery, TTL loop, bounds, stop rules |
+
+#### Testing
+
+| Document | Topic |
+|----------|--------|
+| [TESTING.md](testing/TESTING.md) | Manual test plan |
 
 ---
 
@@ -121,14 +138,20 @@ ft_traceroute/
 ├── objs/                    Object files (build)
 ├── test.sh                  Helper test script
 └── docs/
-    ├── DOCUMENTATION.md     This file
-    ├── structures.md        Constants, structs, timeval, sockaddr_in
-    ├── cli.md
-    ├── networking.md
-    ├── probing.md
-    ├── output.md
-    ├── TESTING.md
-    └── en.subject.pdf
+    ├── DOCUMENTATION.md     This file (hub)
+    ├── en.subject.pdf       Official subject
+    ├── reference/
+    │   └── structures.md    Constants, structs, timeval, sockaddr_in
+    ├── modules/
+    │   ├── cli.md           Argument parsing
+    │   ├── networking.md    DNS, sockets, TTL
+    │   ├── probing.md       Send/recv, RTT, stop
+    │   └── output.md        Header, hops, annotations
+    ├── protocol/
+    │   ├── udp.md           UDP wire format & matching
+    │   └── hops.md          TTL loop & hop discovery
+    └── testing/
+        └── TESTING.md       Manual test plan
 ```
 
 ### Module dependency (runtime order)
@@ -285,7 +308,7 @@ Summaries below. Full narratives live in the linked feature docs.
 - `check_reached()` — Port Unreachable detection.
 - Always closes sockets on the normal path.
 
-See [probing.md](probing.md).
+See [probing.md](modules/probing.md).
 
 ### `args.c` — Argument parsing
 
@@ -295,7 +318,7 @@ See [probing.md](probing.md).
 - Requires `getuid() == 0` after parsing (help works without root).
 - Errors to stderr; process exits on failure.
 
-See [cli.md](cli.md).
+See [cli.md](modules/cli.md).
 
 ### `resolve.c` — DNS / address resolution
 
@@ -304,7 +327,7 @@ See [cli.md](cli.md).
 - Printable IP via `inet_ntoa` → `resolved_ip`.
 - Failures use `gai_strerror` and exit.
 
-See [networking.md](networking.md).
+See [networking.md](modules/networking.md).
 
 ### `socket.c` — Socket management
 
@@ -317,7 +340,7 @@ See [networking.md](networking.md).
 - `close_sockets()` — close both FDs if `>= 0`.
 - Creation failure → `fatal_error()`.
 
-See [networking.md](networking.md).
+See [networking.md](modules/networking.md).
 
 ### `send.c` — Probe transmission
 
@@ -329,7 +352,7 @@ See [networking.md](networking.md).
 
 `sendto` errors are printed but non-fatal; the probe usually times out.
 
-See [probing.md](probing.md).
+See [probing.md](modules/probing.md).
 
 ### `recv.c` — Response reception
 
@@ -355,7 +378,7 @@ Accept only Time Exceeded or Destination Unreachable with an embedded
 UDP dest port equal to `probe->port`. Populate `addr_str`, RTT, type,
 and code.
 
-See [probing.md](probing.md).
+See [probing.md](modules/probing.md).
 
 ### `time.c` — RTT calculation
 
@@ -383,7 +406,7 @@ traceroute to <host> (<IP>), <max_hops> hops max, <packet_size> byte packets
 - Unreachable annotations: `!N`, `!H`, `!P`, `!F`, `!S`, `!X`, or
   `!<code>` (Port Unreachable prints nothing).
 
-See [output.md](output.md).
+See [output.md](modules/output.md).
 
 ### `utils.c` — Fatal errors
 
@@ -455,7 +478,7 @@ Notes:
   after the header.
 - Root is required for normal runs; `--help` works unprivileged.
 
-Full validation details: [cli.md](cli.md).
+Full validation details: [cli.md](modules/cli.md).
 
 ---
 
@@ -493,7 +516,7 @@ traceroute to google.com (142.250.185.78), 30 hops max, 60 byte packets
 With `-n`, hostnames are omitted (`  192.168.1.1` instead of
 `gateway.lan (192.168.1.1)`).
 
-More formatting rules: [output.md](output.md).
+More formatting rules: [output.md](modules/output.md).
 
 ---
 
@@ -600,10 +623,13 @@ Timeouts therefore use `select()` exclusively (see `recv.c`).
 
 | File | Description |
 |------|-------------|
-| [cli.md](cli.md) | CLI layer in depth |
-| [networking.md](networking.md) | Resolution & sockets in depth |
-| [probing.md](probing.md) | Probe engine in depth |
-| [output.md](output.md) | Display layer in depth |
-| [TESTING.md](TESTING.md) | Manual tests and expected results |
+| [structures.md](reference/structures.md) | Constants and data structures |
+| [cli.md](modules/cli.md) | CLI layer in depth |
+| [networking.md](modules/networking.md) | Resolution & sockets in depth |
+| [probing.md](modules/probing.md) | Probe engine in depth |
+| [output.md](modules/output.md) | Display layer in depth |
+| [udp.md](protocol/udp.md) | UDP protocol deep dive |
+| [hops.md](protocol/hops.md) | Hop / TTL behaviour |
+| [TESTING.md](testing/TESTING.md) | Manual tests and expected results |
 | [en.subject.pdf](en.subject.pdf) | Official subject |
 | [../README.md](../README.md) | Project README (build & quick start) |

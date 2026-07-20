@@ -3,11 +3,11 @@
 **Sources:** `srcs/main.c`, `srcs/socket.c`, `srcs/display.c`,
 `srcs/send.c`, `srcs/recv.c`, `srcs/args.c`  
 **Types:** `t_traceroute`, `t_probe` in `includes/ft_traceroute.h`  
-**Related:** [probing.md](probing.md) (send/recv/RTT internals),
-[networking.md](networking.md) (sockets & `IP_TTL`),
+**Related:** [probing.md](../modules/probing.md) (send/recv/RTT internals),
+[networking.md](../modules/networking.md) (sockets & `IP_TTL`),
 [udp.md](udp.md) (why UDP / port matching),
-[output.md](output.md) (line layout & annotations),
-[cli.md](cli.md) (`-f` / `-m` / `-q`)
+[output.md](../modules/output.md) (line layout & annotations),
+[cli.md](../modules/cli.md) (`-f` / `-m` / `-q`)
 
 ## Overview
 
@@ -18,7 +18,7 @@ is the hop-centric view of that walk — what a hop is, how TTL maps to
 hop numbers, how the outer loop is bounded, what each hop’s probes
 mean, how the hop line is printed, and when the walk ends.
 
-Lower-level send/recv mechanics live in [probing.md](probing.md). This
+Lower-level send/recv mechanics live in [probing.md](../modules/probing.md). This
 file focuses on the **per-hop unit of work** and the path map that
 results from many of those units.
 
@@ -215,7 +215,7 @@ even when the destination is eventually reached.
 | `-m max_ttl` | `max_hops` | 1–255 | 30 |
 | `-q nqueries` | `nprobes` | 1–10 (`MAX_PROBES`) | 3 |
 
-Validation lives in `parse_optval()` ([cli.md](cli.md)). Invalid values
+Validation lives in `parse_optval()` ([cli.md](../modules/cli.md)). Invalid values
 abort before any hop runs.
 
 ### Intended uses
@@ -323,7 +323,7 @@ For each probe index `p`:
 `sendto` failure prints to stderr but does **not** abort the hop; that
 probe usually becomes `*` after recv timeout.
 
-Port formula and packet layout: [udp.md](udp.md), [probing.md](probing.md).
+Port formula and packet layout: [udp.md](udp.md), [probing.md](../modules/probing.md).
 
 ### 3. Receive (`recv_probe`)
 
@@ -336,7 +336,7 @@ Wait up to `wait_time` with adaptive `select()`:
 - On timeout / no match: leave `received = 0`.
 
 Unrelated ICMP on the raw socket is discarded without resetting the
-full timeout (remaining time shrinks). See [probing.md](probing.md).
+full timeout (remaining time shrinks). See [probing.md](../modules/probing.md).
 
 ### 4. Print (`print_hop`)
 
@@ -389,7 +389,7 @@ a hard error at this hop.
 | 9 / 10 / 13 | admin prohibited | `!X` |
 | other type 3 | — | `!<code>` |
 
-Full display rules: [output.md](output.md).
+Full display rules: [output.md](../modules/output.md).
 
 ### Timeout (`*`)
 
@@ -589,12 +589,12 @@ resolve + sockets
 
 | Concern | Document |
 |---------|----------|
-| Option parsing & ranges | [cli.md](cli.md) |
-| Sockets & `IP_TTL` | [networking.md](networking.md) |
+| Option parsing & ranges | [cli.md](../modules/cli.md) |
+| Sockets & `IP_TTL` | [networking.md](../modules/networking.md) |
 | UDP ports & matching | [udp.md](udp.md) |
-| Send/recv/RTT details | [probing.md](probing.md) |
-| Line format & annotations | [output.md](output.md) |
-| Manual tests for hops | [TESTING.md](TESTING.md) (N4, N5, N6, …) |
+| Send/recv/RTT details | [probing.md](../modules/probing.md) |
+| Line format & annotations | [output.md](../modules/output.md) |
+| Manual tests for hops | [TESTING.md](../testing/TESTING.md) (N4, N5, N6, …) |
 
 ---
 
